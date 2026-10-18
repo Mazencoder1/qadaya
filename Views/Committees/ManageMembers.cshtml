@@ -1,0 +1,61 @@
+@model Committee
+@{
+    ViewData["Title"] = "إدارة أعضاء " + Model.Name;
+    var availableUsers = (List<ApplicationUser>)ViewBag.AvailableUsers;
+}
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-title">الأعضاء الحاليون</div>
+            @if (!Model.Members.Any())
+            {
+                <p class="text-muted">لا يوجد أعضاء حتى الآن.</p>
+            }
+            @foreach (var m in Model.Members)
+            {
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold">@m.User?.FullName</div>
+                        <div class="small text-muted">@m.RoleInCommittee</div>
+                    </div>
+                    <form asp-action="RemoveMember" method="post">
+                        <input type="hidden" name="memberId" value="@m.Id" />
+                        <input type="hidden" name="committeeId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">إزالة</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-title">إضافة عضو جديد</div>
+            @if (!availableUsers.Any())
+            {
+                <p class="text-muted">تمت إضافة جميع المستخدمين لهذه اللجنة.</p>
+            }
+            else
+            {
+                <form asp-action="AddMember" method="post">
+                    <input type="hidden" name="committeeId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">المستخدم</label>
+                        <select name="userId" class="form-select">
+                            @foreach (var u in availableUsers)
+                            {
+                                <option value="@u.Id">@u.FullName (@u.Department)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الدور في اللجنة</label>
+                        <input name="roleInCommittee" class="form-control" value="عضو" />
+                    </div>
+                    <button type="submit" class="btn btn-brand w-100">إضافة للجنة</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

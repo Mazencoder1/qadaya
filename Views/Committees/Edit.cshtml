@@ -1,0 +1,36 @@
+@model Committee
+@{
+    ViewData["Title"] = "تعديل اللجنة";
+}
+
+<div class="panel" style="max-width:600px;">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label"></label>
+            <input asp-for="Type" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CreatedDate" class="form-label"></label>
+            <input asp-for="CreatedDate" class="form-control" type="date" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-brand">حفظ التعديلات</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>

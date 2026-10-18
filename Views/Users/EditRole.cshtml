@@ -1,0 +1,28 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = "تعديل صلاحية " + Model.FullName;
+    var roles = (List<string?>)ViewBag.Roles;
+    var currentRole = (string?)ViewBag.CurrentRole;
+}
+
+<div class="panel" style="max-width:500px;">
+    <h5 class="mb-1">@Model.FullName</h5>
+    <p class="text-muted small mb-3" dir="ltr">@Model.Email</p>
+
+    <form asp-action="EditRole" asp-route-id="@Model.Id" method="post">
+        <div class="mb-3">
+            <label class="form-label">الدور (الصلاحية)</label>
+            <select name="role" class="form-select">
+                @foreach (var r in roles)
+                {
+                    var label = r == "Admin" ? "مدير النظام" : r == "LegalReviewer" ? "مراجع قانوني" : "موظف";
+                    <option value="@r" selected="@(r == currentRole)">@label</option>
+                }
+            </select>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-brand">حفظ</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>

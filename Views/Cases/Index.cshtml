@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "القضايا";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="filter-bar flex-grow-1">
+        <input type="text" id="searchTerm" class="form-control" placeholder="بحث برقم القضية أو العنوان أو اسم الموظف..." />
+        <select id="statusFilter" class="form-select">
+            <option value="">كل الحالات</option>
+            <option value="New">جديدة</option>
+            <option value="UnderReview">قيد المراجعة</option>
+            <option value="CommitteeDecision">قرار اللجنة</option>
+            <option value="Closed">مغلقة</option>
+        </select>
+        <select id="typeFilter" class="form-select">
+            <option value="">كل الأنواع</option>
+            <option value="Dispute">منازعة</option>
+            <option value="LegalConsultation">استشارة قانونية</option>
+            <option value="Violation">مخالفة</option>
+            <option value="Contract">عقد</option>
+        </select>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("LegalReviewer"))
+    {
+        <a asp-action="Create" class="btn btn-gold ms-2">+ إضافة قضية</a>
+    }
+</div>
+
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>رقم القضية</th>
+                    <th>العنوان</th>
+                    <th>النوع</th>
+                    <th>الحالة</th>
+                    <th>الموظف المرتبط</th>
+                    <th>اللجنة</th>
+                    <th>تاريخ الفتح</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="casesTableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="emptyState" class="text-center text-muted py-5 d-none">لا توجد قضايا مطابقة لبحثك.</div>
+
+@section Scripts {
+    <script>
+        const searchTerm = document.getElementById('searchTerm');
+        const statusFilter = document.getElementById('statusFilter');
+        const typeFilter = document.getElementById('typeFilter');
+        const tbody = document.getElementById('casesTableBody');
+        const emptyState = document.getElementById('emptyState');
+        let debounceTimer;
+
+        async function loadCases() {
+            const params = new URLSearchParams({
+                term: searchTerm.value || '',
+                status: statusFilter.value || '',
+                type: typeFilter.value || ''
+            });
+            const response = await fetch('@Url.Action("Search", "Cases")?' + params.toString());
+            const html = await response.text();
+            tbody.innerHTML = html;
+            emptyState.classList.toggle('d-none', tbody.children.length > 0);
+        }
+
+        searchTerm.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(loadCases, 300);
+        });
+        statusFilter.addEventListener('change', loadCases);
+        typeFilter.addEventListener('change', loadCases);
+
+        document.addEventListener('DOMContentLoaded', loadCases);
+        loadCases();
+    </script>
+}

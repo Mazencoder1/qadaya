@@ -1,0 +1,53 @@
+@model List<DisciplinaryRecord>
+@{
+    ViewData["Title"] = "السجلات التأديبية";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">عدد السجلات: @Model.Count</p>
+    <a asp-action="Create" class="btn btn-gold">+ إضافة سجل تأديبي</a>
+</div>
+
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>اسم الموظف</th>
+                    <th>نوع المخالفة</th>
+                    <th>القرار الصادر</th>
+                    <th>التاريخ</th>
+                    <th>القضية المرتبطة</th>
+                    <th>اللجنة</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@d.EmployeeName</td>
+                        <td>@d.ViolationType</td>
+                        <td>@d.Decision</td>
+                        <td>@d.Date.ToString("yyyy/MM/dd")</td>
+                        <td>
+                            @if (d.Case != null)
+                            {
+                                <a asp-controller="Cases" asp-action="Details" asp-route-id="@d.Case.Id">@d.Case.CaseNumber</a>
+                            }
+                            else { <span class="text-muted">—</span> }
+                        </td>
+                        <td>@(d.Committee?.Name ?? "—")</td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-sm btn-outline-secondary">تعديل</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@d.Id" class="btn btn-sm btn-outline-danger">حذف</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

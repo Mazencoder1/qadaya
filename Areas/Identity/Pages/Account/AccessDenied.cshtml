@@ -1,0 +1,11 @@
+@page
+@model Qadaya.Areas.Identity.Pages.Account.AccessDeniedModel
+@{
+    ViewData["Title"] = "رفض الوصول";
+}
+<div class="text-center">
+    <div style="font-size:3rem;">🚫</div>
+    <h4 class="mt-2">لا تملك صلاحية الوصول لهذه الصفحة</h4>
+    <p class="text-muted">تواصل مع مدير النظام إذا كنت تعتقد أن هذا خطأ.</p>
+    <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="btn btn-auth mt-3">الرجوع للوحة التحكم</a>
+</div>

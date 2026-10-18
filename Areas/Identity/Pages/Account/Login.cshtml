@@ -1,0 +1,35 @@
+@page
+@model Qadaya.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+
+<form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="auth-form">
+    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Email" class="form-label"></label>
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" placeholder="example@qadaya.sa" />
+        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label"></label>
+        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" placeholder="••••••••" />
+        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="Input.RememberMe" class="form-check-input" />
+        <label asp-for="Input.RememberMe" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-auth w-100">دخول</button>
+
+    <div class="auth-hint mt-4">
+        <p class="mb-1 fw-semibold">بيانات تجربة سريعة:</p>
+        <p class="mb-0">admin@qadaya.sa — Admin@12345</p>
+        <p class="mb-0">reviewer@qadaya.sa — Reviewer@12345</p>
+        <p class="mb-0">employee@qadaya.sa — Employee@12345</p>
+    </div>
+</form>

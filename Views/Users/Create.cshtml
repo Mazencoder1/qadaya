@@ -1,0 +1,53 @@
+@model CreateUserViewModel
+@{
+    ViewData["Title"] = "إضافة مستخدم";
+    var roles = (List<string?>)ViewBag.Roles;
+}
+
+<div class="panel" style="max-width:600px;">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" dir="ltr" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" dir="ltr" />
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Department" class="form-label"></label>
+                <input asp-for="Department" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="JobTitle" class="form-label"></label>
+                <input asp-for="JobTitle" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Role" class="form-label"></label>
+            <select asp-for="Role" class="form-select">
+                @foreach (var r in roles)
+                {
+                    var label = r == "Admin" ? "مدير النظام" : r == "LegalReviewer" ? "مراجع قانوني" : "موظف";
+                    <option value="@r">@label</option>
+                }
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-brand">حفظ المستخدم</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,142 @@
+@model LegalCase
+@{
+    ViewData["Title"] = "قضية " + Model.CaseNumber;
+}
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="panel mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="case-number mb-1" style="font-size:1.1rem;">@Model.CaseNumber</div>
+                    <h4 class="mb-2">@Model.Title</h4>
+                    <div class="d-flex gap-2 mb-2">
+                        <span class="badge badge-type">@Model.CaseType.ToArabic()</span>
+                        <span class="badge @Model.Status.BadgeClass()">@Model.Status.ToArabic()</span>
+                    </div>
+                </div>
+                @if (User.IsInRole("Admin") || User.IsInRole("LegalReviewer"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">تعديل</a>
+                }
+            </div>
+
+            <hr />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="text-muted small">الموظف المرتبط</div>
+                    <div class="fw-semibold">@Model.LinkedEmployeeName</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted small">الإدارة / القسم</div>
+                    <div class="fw-semibold">@(string.IsNullOrWhiteSpace(Model.Department) ? "—" : Model.Department)</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted small">تاريخ الفتح</div>
+                    <div class="fw-semibold">@Model.OpenedDate.ToString("yyyy/MM/dd")</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted small">اللجنة المكلفة</div>
+                    <div class="fw-semibold">
+                        @if (Model.Committee != null)
+                        {
+                            <a asp-controller="Committees" asp-action="Details" asp-route-id="@Model.Committee.Id">@Model.Committee.Name</a>
+                        }
+                        else
+                        {
+                            <span>لم تُحدد لجنة بعد</span>
+                        }
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="text-muted small">وصف القضية</div>
+                    <div>@(string.IsNullOrWhiteSpace(Model.Description) ? "لا يوجد وصف." : Model.Description)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">سجل المتابعة (Audit Trail)</div>
+            <div class="timeline">
+                @foreach (var h in Model.HistoryEntries)
+                {
+                    <div class="timeline-item">
+                        <div class="timeline-date">@h.ChangedAt.ToString("yyyy/MM/dd - hh:mm tt") بواسطة @h.ChangedByName</div>
+                        <div class="timeline-title">
+                            @if (h.OldStatus == h.NewStatus)
+                            {
+                                @("فتح القضية بحالة: " + h.NewStatus.ToArabic())
+                            }
+                            else
+                            {
+                                @(h.OldStatus.ToArabic() + " ← " + h.NewStatus.ToArabic())
+                            }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(h.Note))
+                        {
+                            <div class="text-muted small">@h.Note</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        @if ((User.IsInRole("Admin") || User.IsInRole("LegalReviewer")) && Model.Status != CaseStatus.Closed)
+        {
+            <div class="panel mb-3">
+                <div class="panel-title">تحديث حالة القضية</div>
+                <form asp-action="ChangeStatus" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">الحالة الجديدة</label>
+                        <select name="newStatus" class="form-select">
+                            @foreach (CaseStatus s in Enum.GetValues(typeof(CaseStatus)))
+                            {
+                                <option value="@s" selected="@(s == Model.Status)">@s.ToArabic()</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظة (اختياري)</label>
+                        <textarea name="note" class="form-control" rows="3" placeholder="أدخل ملاحظة توضح سبب التغيير..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100">تحديث الحالة</button>
+                </form>
+            </div>
+        }
+
+        <div class="panel mb-3">
+            <div class="panel-title">مخطط سير العمل</div>
+            <div class="d-flex flex-column gap-2">
+                @{
+                    var steps = new[] { CaseStatus.New, CaseStatus.UnderReview, CaseStatus.CommitteeDecision, CaseStatus.Closed };
+                }
+                @foreach (var step in steps)
+                {
+                    var reached = (int)Model.Status >= (int)step;
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="width:10px;height:10px;border-radius:50%;background:@(reached ? "#c9a24b" : "#dfe4e8");display:inline-block;"></span>
+                        <span style="color:@(reached ? "#0e2a3d" : "#9aa5ab"); font-weight:@(step == Model.Status ? "700" : "500");">@step.ToArabic()</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (Model.DisciplinaryRecords.Any())
+        {
+            <div class="panel">
+                <div class="panel-title">سجلات تأديبية مرتبطة</div>
+                @foreach (var d in Model.DisciplinaryRecords)
+                {
+                    <div class="mb-2 pb-2 border-bottom">
+                        <div class="fw-semibold">@d.EmployeeName</div>
+                        <div class="small text-muted">@d.ViolationType — @d.Date.ToString("yyyy/MM/dd")</div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

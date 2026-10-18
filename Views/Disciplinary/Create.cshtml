@@ -1,0 +1,69 @@
+@model DisciplinaryRecord
+@{
+    ViewData["Title"] = "إضافة سجل تأديبي";
+    var cases = (List<LegalCase>)ViewBag.Cases;
+    var committees = (List<Committee>)ViewBag.Committees;
+}
+
+<div class="panel" style="max-width:700px;">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="EmployeeName" class="form-label"></label>
+                <input asp-for="EmployeeName" class="form-control" />
+                <span asp-validation-for="EmployeeName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="Date" class="form-label"></label>
+                <input asp-for="Date" class="form-control" type="date" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ViolationType" class="form-label"></label>
+            <input asp-for="ViolationType" class="form-control" />
+            <span asp-validation-for="ViolationType" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Decision" class="form-label"></label>
+            <input asp-for="Decision" class="form-control" />
+            <span asp-validation-for="Decision" class="text-danger small"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="CaseId" class="form-label"></label>
+                <select asp-for="CaseId" class="form-select">
+                    <option value="">— بدون قضية مرتبطة —</option>
+                    @foreach (var c in cases)
+                    {
+                        <option value="@c.Id">@c.CaseNumber - @c.Title</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="CommitteeId" class="form-label"></label>
+                <select asp-for="CommitteeId" class="form-select">
+                    <option value="">— بدون لجنة —</option>
+                    @foreach (var c in committees)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Notes" class="form-label"></label>
+            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-brand">حفظ السجل</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>

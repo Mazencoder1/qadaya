@@ -1,0 +1,13 @@
+@model DisciplinaryRecord
+@{
+    ViewData["Title"] = "حذف السجل التأديبي";
+}
+
+<div class="panel" style="max-width:600px;">
+    <h5 class="mb-3">تأكيد حذف السجل</h5>
+    <p>هل أنت متأكد أنك تريد حذف السجل التأديبي الخاص بـ "<strong>@Model.EmployeeName</strong>"؟</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-danger">نعم، حذف السجل</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">إلغاء</a>
+    </form>
+</div>

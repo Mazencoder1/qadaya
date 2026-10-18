@@ -1,0 +1,47 @@
+@model List<UserListItemViewModel>
+@{
+    ViewData["Title"] = "المستخدمون والصلاحيات";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">عدد المستخدمين: @Model.Count</p>
+    <a asp-action="Create" class="btn btn-gold">+ إضافة مستخدم</a>
+</div>
+
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>الاسم</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الإدارة</th>
+                    <th>المسمى الوظيفي</th>
+                    <th>الدور</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@u.FullName</td>
+                        <td dir="ltr" class="text-muted">@u.Email</td>
+                        <td>@u.Department</td>
+                        <td>@u.JobTitle</td>
+                        <td>
+                            @foreach (var r in u.Roles)
+                            {
+                                var label = r == "Admin" ? "مدير النظام" : r == "LegalReviewer" ? "مراجع قانوني" : "موظف";
+                                <span class="badge badge-type">@label</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="EditRole" asp-route-id="@u.Id" class="btn btn-sm btn-outline-secondary">تعديل الصلاحية</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

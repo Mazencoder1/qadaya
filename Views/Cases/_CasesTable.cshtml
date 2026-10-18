@@ -1,0 +1,16 @@
+@model List<LegalCase>
+@foreach (var c in Model)
+{
+    <tr>
+        <td><a asp-action="Details" asp-route-id="@c.Id" class="case-number">@c.CaseNumber</a></td>
+        <td>@c.Title</td>
+        <td><span class="badge badge-type">@c.CaseType.ToArabic()</span></td>
+        <td><span class="badge @c.Status.BadgeClass()">@c.Status.ToArabic()</span></td>
+        <td>@c.LinkedEmployeeName</td>
+        <td>@(c.Committee?.Name ?? "—")</td>
+        <td>@c.OpenedDate.ToString("yyyy/MM/dd")</td>
+        <td class="text-end">
+            <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary">عرض</a>
+        </td>
+    </tr>
+}

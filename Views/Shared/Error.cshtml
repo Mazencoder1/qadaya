@@ -1,0 +1,15 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "حدث خطأ";
+}
+
+<div class="text-center" style="padding:80px 20px;">
+    <div style="font-size:3rem;">⚠️</div>
+    <h2 class="mt-2">عذراً، حدث خطأ غير متوقع</h2>
+    <p class="text-muted">يرجى المحاولة لاحقاً أو التواصل مع مدير النظام.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="text-muted small">رقم الطلب: <code>@Model.RequestId</code></p>
+    }
+    <a href="/" class="btn btn-brand mt-3">الرجوع للصفحة الرئيسية</a>
+</div>

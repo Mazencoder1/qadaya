@@ -1,0 +1,67 @@
+@model Committee
+@{
+    ViewData["Title"] = "لجنة " + Model.Name;
+}
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="panel mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h4>@Model.Name</h4>
+                    <span class="badge badge-type">@Model.Type</span>
+                </div>
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">تعديل</a>
+                        <a asp-action="ManageMembers" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">إدارة الأعضاء</a>
+                    </div>
+                }
+            </div>
+            <hr />
+            <p>@Model.Description</p>
+            <div class="text-muted small">تاريخ التأسيس: @Model.CreatedDate.ToString("yyyy/MM/dd")</div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">القضايا المرتبطة باللجنة</div>
+            @if (!Model.Cases.Any())
+            {
+                <p class="text-muted">لا توجد قضايا مرتبطة حالياً.</p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead><tr><th>رقم القضية</th><th>العنوان</th><th>الحالة</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in Model.Cases)
+                        {
+                            <tr>
+                                <td><a asp-controller="Cases" asp-action="Details" asp-route-id="@c.Id" class="case-number">@c.CaseNumber</a></td>
+                                <td>@c.Title</td>
+                                <td><span class="badge @c.Status.BadgeClass()">@c.Status.ToArabic()</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="panel">
+            <div class="panel-title">أعضاء اللجنة (@Model.Members.Count)</div>
+            @foreach (var m in Model.Members)
+            {
+                <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
+                    <div class="user-avatar" style="background:#136f63;color:#fff;">@(m.User?.FullName?.Substring(0,1) ?? "؟")</div>
+                    <div>
+                        <div class="fw-semibold">@m.User?.FullName</div>
+                        <div class="small text-muted">@m.RoleInCommittee — @m.User?.Department</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

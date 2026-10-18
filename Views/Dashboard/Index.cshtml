@@ -1,0 +1,122 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "لوحة التحكم";
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card accent-navy">
+            <div class="stat-icon">📁</div>
+            <div class="stat-value">@Model.TotalCases</div>
+            <div class="stat-label">إجمالي القضايا</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card accent-gold">
+            <div class="stat-icon">🕒</div>
+            <div class="stat-value">@Model.OpenCases</div>
+            <div class="stat-label">قضايا مفتوحة</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card accent-teal">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">@Model.ClosedThisMonth</div>
+            <div class="stat-label">أُغلقت هذا الشهر</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card accent-danger">
+            <div class="stat-icon">⚖️</div>
+            <div class="stat-value">@Model.PendingCommitteeDecisions</div>
+            <div class="stat-label">بانتظار قرار اللجنة</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="panel h-100">
+            <div class="panel-title">توزيع القضايا حسب الحالة</div>
+            <canvas id="statusChart" height="260"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="panel h-100">
+            <div class="panel-title">آخر القضايا المسجلة</div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>رقم القضية</th>
+                            <th>العنوان</th>
+                            <th>النوع</th>
+                            <th>الحالة</th>
+                            <th>تاريخ الفتح</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.RecentCases)
+                        {
+                            <tr>
+                                <td><a asp-controller="Cases" asp-action="Details" asp-route-id="@c.Id" class="case-number">@c.CaseNumber</a></td>
+                                <td>@c.Title</td>
+                                <td><span class="badge badge-type">@c.CaseType.ToArabic()</span></td>
+                                <td><span class="badge @c.Status.BadgeClass()">@c.Status.ToArabic()</span></td>
+                                <td>@c.OpenedDate.ToString("yyyy/MM/dd")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-md-4">
+        <div class="stat-card accent-navy">
+            <div class="stat-icon">🧑‍⚖️</div>
+            <div class="stat-value">@Model.TotalCommittees</div>
+            <div class="stat-label">عدد اللجان النشطة</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card accent-gold">
+            <div class="stat-icon">📋</div>
+            <div class="stat-value">@Model.TotalDisciplinaryRecords</div>
+            <div class="stat-label">السجلات التأديبية</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card accent-teal">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-value">@Model.ViolationCount</div>
+            <div class="stat-label">قضايا مخالفات</div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script>
+        const ctx = document.getElementById('statusChart');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['جديدة', 'قيد المراجعة', 'قرار اللجنة', 'مغلقة'],
+                datasets: [{
+                    data: [@Model.NewCount, @Model.UnderReviewCount, @Model.CommitteeDecisionCount, @Model.ClosedCount],
+                    backgroundColor: ['#1a5a96', '#c9a24b', '#5b3a9b', '#1f7a45'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'bottom', rtl: true, labels: { font: { family: 'IBM Plex Sans Arabic' } } }
+                }
+            }
+        });
+    </script>
+}

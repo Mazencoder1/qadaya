@@ -1,0 +1,13 @@
+@model LegalCase
+@{
+    ViewData["Title"] = "حذف القضية";
+}
+
+<div class="panel" style="max-width:600px;">
+    <h5 class="mb-3">تأكيد حذف القضية</h5>
+    <p>هل أنت متأكد أنك تريد حذف القضية <strong>@Model.CaseNumber</strong> - "@Model.Title"؟ لا يمكن التراجع عن هذا الإجراء.</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-danger">نعم، حذف القضية</button>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">إلغاء</a>
+    </form>
+</div>
